@@ -4,6 +4,9 @@ import { IAuthProvider, IsActive, IUser, Role } from "./user.interface";
 const authProviderSchema = new Schema<IAuthProvider>({
     provider: { type: String, required: true },
     providerId: { type: String, required: true }
+}, {
+    versionKey: false,
+    _id: false
 })
 
 const userSchema = new Schema<IUser>({
