@@ -1,11 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import { envVars } from "../app/config/env";
-import { verifyToken } from "../app/utils/jwt";
-import AppError from "../errorHelpers/AppError";
+// import { envVars } from "../app/config/env";
+// import { verifyToken } from "../app/utils/jwt";
+// import AppError from "../app/errorHelpers/AppError";
 import { JwtPayload } from "jsonwebtoken";
-import { User } from "../app/modules/user/user.model";
-import { IsActive } from "../app/modules/user/user.interface";
+// import { User } from "../app/modules/user/user.model";
+// import { IsActive } from "../app/modules/user/user.interface";
 import httpStatus from 'http-status-codes'
+import AppError from "../errorHelpers/AppError";
+import { verifyToken } from "../utils/jwt";
+import { envVars } from "../config/env";
+import { User } from "../modules/user/user.model";
+import { IsActive } from "../modules/user/user.interface";
 
 
 export const checkAuth = (...authRoles: string[]) => async (req: Request, res: Response, next: NextFunction) => {

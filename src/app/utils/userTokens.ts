@@ -3,7 +3,7 @@ import { envVars } from "../config/env";
 import { IsActive, IUser } from "../modules/user/user.interface";
 import { generateToken, verifyToken } from "./jwt";
 import { User } from "../modules/user/user.model";
-import AppError from "../../errorHelpers/AppError";
+import AppError from "../errorHelpers/AppError";
 import httpStatus from 'http-status-codes'
 
 export const createUserToken = (user: Partial<IUser>) => {

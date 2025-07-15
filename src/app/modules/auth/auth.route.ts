@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { AuthControllers } from "./auth.controller";
-import { checkAuth } from "../../../middlewares/checkAuth";
+// import { checkAuth } from "../../../middlewares/checkAuth";
 import { Role } from "../user/user.interface";
+import { checkAuth } from "../../middlewares/checkAuth";
 
 const router = Router()
 

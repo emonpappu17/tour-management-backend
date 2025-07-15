@@ -14,7 +14,6 @@ export enum Role {
 export interface IAuthProvider {
     provider: "google" | "credentials"; // "Google", "Credential"
     providerId: string;
-
 }
 
 export enum IsActive {
@@ -25,7 +24,7 @@ export enum IsActive {
 
 
 export interface IUser {
-    _id: Types.ObjectId,
+    _id?: Types.ObjectId,
     name: string;
     email: string;
     password?: string;

@@ -4,7 +4,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from 'http-status-codes';
 import { AuthServices } from "./auth.service";
-import AppError from "../../../errorHelpers/AppError";
+import AppError from "../../errorHelpers/AppError";
 import { setAuthCookie } from "../../utils/setCookie";
 
 const credentialsLogin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

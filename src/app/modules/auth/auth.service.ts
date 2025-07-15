@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import AppError from "../../../errorHelpers/AppError";
+import AppError from "../../errorHelpers/AppError";
 import { IUser } from "../user/user.interface"
 import httpStatus from 'http-status-codes'
 import { User } from "../user/user.model";
