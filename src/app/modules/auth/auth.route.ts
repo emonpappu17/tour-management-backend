@@ -3,12 +3,6 @@ import { AuthControllers } from "./auth.controller";
 import { Role } from "../user/user.interface";
 import { checkAuth } from "../../middlewares/checkAuth";
 import passport from "passport";
-// import AppError from "../../errorHelpers/AppError";
-// import httpStatus from 'http-status-codes';
-// import { createUserToken } from "../../utils/userTokens";
-// import { setAuthCookie } from "../../utils/setCookie";
-// import { envVars } from "../../config/env";
-
 
 const router = Router()
 
@@ -20,15 +14,12 @@ router.post("/reset-password", checkAuth(...Object.values(Role)), AuthController
 // /booking -> /login -> successful google login -> /booking frontend
 // /login -> successful google login -> / frontend
 router.get("/google", async (req: Request, res: Response, next: NextFunction) => {
-    console.log('/google hit 1st');
     const redirect = req.query.redirect || "/"
-
     passport.authenticate("google", { scope: ["profile", "email"], state: redirect as string })(req, res, next)
 })
 
 // api/v1/auth/google/callback?state=/booking
 router.get("/google/callback", passport.authenticate("google", { failureRedirect: "/login" }), AuthControllers.googleCallbackController)
-
 
 
 // // Start Google auth
