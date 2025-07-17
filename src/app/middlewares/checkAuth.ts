@@ -1,10 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-// import { envVars } from "../app/config/env";
-// import { verifyToken } from "../app/utils/jwt";
-// import AppError from "../app/errorHelpers/AppError";
 import { JwtPayload } from "jsonwebtoken";
-// import { User } from "../app/modules/user/user.model";
-// import { IsActive } from "../app/modules/user/user.interface";
 import httpStatus from 'http-status-codes'
 import AppError from "../errorHelpers/AppError";
 import { verifyToken } from "../utils/jwt";
