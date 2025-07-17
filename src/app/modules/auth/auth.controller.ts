@@ -42,18 +42,6 @@ const credentialsLogin = catchAsync(async (req: Request, res: Response, next: Ne
             }
         })
     })(req, res, next)
-
-    // res.cookie("accessToken", loginInfo.accessToken, {
-    //     httpOnly: true,
-    //     secure: false
-    // })
-
-    // res.cookie("refreshToken", loginInfo.refreshToken, {
-    //     httpOnly: true,
-    //     secure: false
-    // })
-
-
 })
 
 const getNewAccessToken = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
