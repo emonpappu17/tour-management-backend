@@ -1,5 +1,5 @@
-import AppError from "../../../errorHelpers/AppError";
-import { IAuthProvider, IsActive, IUser, Role } from "./user.interface";
+import AppError from "../../errorHelpers/AppError";
+import { IAuthProvider, IUser, Role } from "./user.interface";
 import { User } from "./user.model";
 import httpStatus from 'http-status-codes'
 import bcryptjs from 'bcryptjs';
@@ -11,9 +11,9 @@ const createUser = async (payload: Partial<IUser>) => {
 
     const isUserExist = await User.findOne({ email })
 
-    if (isUserExist) {
-        throw new AppError(httpStatus.BAD_REQUEST, "User Already Exist")
-    }
+    // if (isUserExist) {
+    //     throw new AppError(httpStatus.BAD_REQUEST, "User Already Exist")
+    // }
 
     const hashedPassword = await bcryptjs.hash(password as string, Number(envVars.BCRYPT_SALT_ROUND))
 
@@ -45,7 +45,7 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
      */
 
     if (payload.role) {
-        // User and Guide can to update role
+        // User and Guide can not update role
         if (decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE) {
             throw new AppError(httpStatus.FORBIDDEN, "You are not authorized")
         }

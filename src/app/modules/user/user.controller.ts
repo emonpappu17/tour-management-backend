@@ -3,13 +3,10 @@
 import { NextFunction, Request, Response } from "express";
 import httpStatus from 'http-status-codes';
 import { UserServices } from "./user.service";
-import AppError from "../../../errorHelpers/AppError";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
-import { date } from "zod";
-import { verifyToken } from "../../utils/jwt";
-import { envVars } from "../../config/env";
 import { JwtPayload } from "jsonwebtoken";
+
 
 const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const user = await UserServices.createUser(req.body);
@@ -38,7 +35,7 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
     const payload = req.body;
 
-    const user = await UserServices.updateUser(userId, payload, verifiedToken);
+    const user = await UserServices.updateUser(userId, payload, verifiedToken as JwtPayload);
 
     // res.status(httpStatus.CREATED).json({
     //     message: "User Created Successfully",
