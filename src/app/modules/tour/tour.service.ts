@@ -36,27 +36,61 @@ const deleteTourType = async (id: string) => {
 /* --------------------- TOUR SERVICE ---------------------- */
 const createTour = async (payload: ITour) => {
 
-    console.log('payload tour===>', payload);
-
     const existingTour = await Tour.findOne({ title: payload.title });
 
     if (existingTour) {
         throw new Error("A tour with this title already exists.");
     }
 
-    const baseSlug = payload.title.toLocaleLowerCase().split(" ").join('-')
-    let slug = ` ${baseSlug}-division`
+    // const baseSlug = payload.title.toLocaleLowerCase().split(" ").join('-')
+    // let slug = ` ${baseSlug}`
 
-    let counter = 0;
-    while (await Tour.exists({ slug })) {
-        slug = `${slug}-${counter++}`
-    }
+    // let counter = 0;
+    // while (await Tour.exists({ slug })) {
+    //     slug = `${slug}-${counter++}`
+    // }
 
-    payload.slug = slug;
+    // payload.slug = slug;
 
     const tour = await Tour.create(payload);
 
     return tour;
+}
+const getAllTours = async (query: Record<string, string>) => {
+    console.log(query);
+    const filter = query;
+    const tours = await Tour.find(filter);
+    const totalTours = await Tour.countDocuments();
+    return {
+        data: tours,
+        meta: {
+            total: totalTours
+        }
+    }
+}
+
+const updateTour = async (id: string, payload: Partial<ITour>) => {
+    const existingTour = await Tour.findById(id);
+
+    if (!existingTour) {
+        throw new Error("Tour not found.");
+    }
+
+    // if (payload.title) {
+    //     const baseSlug = payload.title.toLowerCase().split(" ").join("-")
+    //     let slug = `${baseSlug}`
+
+    //     let counter = 0;
+    //     while (await Tour.exists({ slug })) {
+    //         slug = `${slug}-${counter++}`
+    //     }
+
+    //     payload.slug = slug
+    // }
+
+    const updatedTour = await Tour.findByIdAndUpdate(id, payload, { new: true })
+
+    return updatedTour;
 }
 
 export const TourService = {
@@ -64,5 +98,7 @@ export const TourService = {
     getAllTourTypes,
     updateTourType,
     deleteTourType,
-    createTour
+    createTour,
+    getAllTours,
+    updateTour
 }
