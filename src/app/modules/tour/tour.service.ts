@@ -2,6 +2,7 @@ import { tourSearchableFields } from "./tour.contant";
 import { ITour, ITourType } from "./tour.interface"
 import { Tour, TourType } from "./tour.model"
 import { QueryBuilder } from "../../utils/QueryBuilder";
+import { excludeField } from "../../contants";
 /* --------------------- TOUR TYPE SERVICE ---------------------- */
 const createTourType = async (payload: ITourType) => {
     const existingTourType = await TourType.findOne({ name: payload.name });
@@ -59,82 +60,77 @@ const createTour = async (payload: ITour) => {
     return tour;
 }
 
-// const getAllTours = async (query: Record<string, string>) => {
+const getAllToursOld = async (query: Record<string, string>) => {
 
-//     console.log('query ====>', query);
+    console.log('query ====>', query);
 
-//     const filter = query;
+    const filter = query;
 
-//     const searchTerm = query.searchTerm || "";
+    const searchTerm = query.searchTerm || "";
 
-//     const sort = query.sort || "-createdAt";
+    const sort = query.sort || "-createdAt";
 
-//     const page = Number(query.page) || 1;
+    const page = Number(query.page) || 1;
 
-//     const limit = Number(query.limit) || 10;
+    const limit = Number(query.limit) || 10;
 
-//     const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit;
 
-//     // field filtering
-//     const fields = query.fields?.split(",").join(" ") || "";
+    // field filtering
+    const fields = query.fields?.split(",").join(" ") || "";
 
-//     // delete filter["searchTerm"]
-//     // delete filter["sort"]
+    // delete filter["searchTerm"]
+    // delete filter["sort"]
 
-//     for (const field of excludeField) {
-//         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-//         delete filter[field]
-//     }
+    for (const field of excludeField) {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete filter[field]
+    }
 
-//     const searchQuery = {
-//         $or: tourSearchableFields.map(field => ({ [field]: { $regex: searchTerm, $options: "i" } }))
-//     }
+    const searchQuery = {
+        $or: tourSearchableFields.map(field => ({ [field]: { $regex: searchTerm, $options: "i" } }))
+    }
 
-//     // const tours = await Tour.find(searchQuery).find(filter).sort(sort).select(fields).skip(skip).limit(limit);
+    // const tours = await Tour.find(searchQuery).find(filter).sort(sort).select(fields).skip(skip).limit(limit);
 
-//     const filterQuery = Tour.find(filter)
+    const filterQuery = Tour.find(filter)
 
-//     const tours = filterQuery.find(searchQuery)
+    const tours = filterQuery.find(searchQuery)
 
-//     const allTours = await tours.sort(sort).select(fields).skip(skip).limit(limit)
+    const allTours = await tours.sort(sort).select(fields).skip(skip).limit(limit)
 
-//     const totalTours = await Tour.countDocuments();
+    const totalTours = await Tour.countDocuments();
 
-//     const totalPage = Math.ceil(totalTours / limit)
+    const totalPage = Math.ceil(totalTours / limit)
 
-//     const meta = {
-//         page: page,
-//         limit: limit,
-//         total: totalTours,
-//         totalPage: totalPage
-//     }
+    const meta = {
+        page: page,
+        limit: limit,
+        total: totalTours,
+        totalPage: totalPage
+    }
 
-//     return {
-//         data: allTours,
-//         meta: meta
-//     }
-// }
+    return {
+        data: allTours,
+        meta: meta
+    }
+}
 
 const getAllTours = async (query: Record<string, string>) => {
 
     const queryBuilder = new QueryBuilder(Tour.find(), query);
 
-    const tours = await queryBuilder
+    const tours = queryBuilder
         .search(tourSearchableFields)
         .filter()
         .sort()
         .fields()
         .paginate()
 
-
-    // const meta = await queryBuilder.getMeta()
-
     const [data, meta] = await Promise.all([
         tours.build(),
         queryBuilder.getMeta()
     ])
-
-    // console.log(queryExecute);
 
     return {
         data,
@@ -173,5 +169,6 @@ export const TourService = {
     deleteTourType,
     createTour,
     getAllTours,
-    updateTour
+    updateTour,
+    getAllToursOld
 }
