@@ -5,6 +5,7 @@ import { QueryBuilder } from "../../utils/QueryBuilder";
 import { excludeField } from "../../contants";
 import AppError from "../../errorHelpers/AppError";
 import httpStatus from "http-status-codes"
+import { Booking } from "../booking/booking.model";
 
 /* --------------------- TOUR TYPE SERVICE ---------------------- */
 const createTourType = async (payload: ITourType) => {
@@ -207,6 +208,10 @@ const deleteTour = async (id: string) => {
     if (!existingTour) {
         throw new Error("Tour not found.");
     }
+
+    const isUsed = await Booking.exists({ tour: id });
+
+    if (isUsed) throw new AppError(httpStatus.BAD_REQUEST, "Cannot delete Tour — it's still used in booking");
 
     return await Tour.findByIdAndDelete(id);
 }
