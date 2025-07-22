@@ -1,5 +1,10 @@
+import AppError from "../../errorHelpers/AppError";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { Tour } from "../tour/tour.model";
+import { divisionSearchableFields } from "./division.constant";
 import { IDivision } from "./division.interface";
 import { Division } from "./division.model";
+import httpStatus from "http-status-codes"
 
 const createDivision = async (payload: IDivision) => {
     const existingDivision = await Division.findOne({ name: payload.name });
@@ -22,14 +27,25 @@ const createDivision = async (payload: IDivision) => {
     return division
 }
 
-const getAllDivisions = async () => {
-    const divisions = await Division.find({});
-    const totalDivisions = await Division.countDocuments();
+const getAllDivisions = async (query: Record<string, string>) => {
+
+    const queryBuilder = new QueryBuilder(Division.find(), query)
+
+    const divisionsData = queryBuilder
+        .search(divisionSearchableFields)
+        .filter()
+        .sort()
+        .fields()
+        .paginate()
+
+    const [data, meta] = await Promise.all([
+        divisionsData.build(),
+        queryBuilder.getMeta()
+    ])
+
     return {
-        data: divisions,
-        meta: {
-            total: totalDivisions
-        }
+        data,
+        meta
     }
 }
 
@@ -73,7 +89,13 @@ const getSingleDivision = async (slug: string) => {
 }
 
 const deleteDivision = async (id: string) => {
+
+    const isUsed = await Tour.exists({ division: id });
+
+    if (isUsed) throw new AppError(httpStatus.BAD_REQUEST, "Cannot delete division — it's still used in tours");
+
     await Division.findByIdAndDelete(id);
+
     return null;
 }
 

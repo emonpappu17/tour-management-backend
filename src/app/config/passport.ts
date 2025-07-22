@@ -52,8 +52,8 @@ passport.use(new GoogleStrategy(
         callbackURL: envVars.GOOGLE_CALLBACK_URL
     }, async (accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback) => {
         try {
-            console.log('GoogleStrategy hit 2nd');
-            console.log('GoogleStrategy profile-->', profile);
+            // console.log('GoogleStrategy hit 2nd');
+            // console.log('GoogleStrategy profile-->', profile);
 
             const email = profile.emails?.[0].value;
 

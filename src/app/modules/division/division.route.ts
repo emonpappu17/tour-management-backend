@@ -10,15 +10,27 @@ const route = Router();
 route.post(
     "/create",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
-    validateRequest(createDivisionSchema), DivisionController.createDivision
+    validateRequest(createDivisionSchema),
+    DivisionController.createDivision
 )
-route.get("/", DivisionController.getAllDivisions)
+
+route.get(
+    "/",
+    DivisionController.getAllDivisions
+)
+
 route.patch(
     "/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
     validateRequest(updateDivisionSchema),
-    DivisionController.updateDivision)
-route.get("/:slug", DivisionController.getSingleDivision)
+    DivisionController.updateDivision
+)
+
+route.get(
+    "/:slug",
+    DivisionController.getSingleDivision
+)
+
 route.delete(
     "/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),

@@ -1,8 +1,11 @@
-import { tourSearchableFields } from "./tour.contant";
+import { tourSearchableFields, tourTypeSearchableFields } from "./tour.contant";
 import { ITour, ITourType } from "./tour.interface"
 import { Tour, TourType } from "./tour.model"
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { excludeField } from "../../contants";
+import AppError from "../../errorHelpers/AppError";
+import httpStatus from "http-status-codes"
+
 /* --------------------- TOUR TYPE SERVICE ---------------------- */
 const createTourType = async (payload: ITourType) => {
     const existingTourType = await TourType.findOne({ name: payload.name });
@@ -14,9 +17,29 @@ const createTourType = async (payload: ITourType) => {
     return await TourType.create(payload);
 }
 
-const getAllTourTypes = async () => {
-    return await TourType.find();
+const getAllTourTypes = async (query: Record<string, string>) => {
+
+    const queryBuilder = new QueryBuilder(TourType.find(), query);
+
+    const tourTypes = queryBuilder.search(tourTypeSearchableFields).filter().sort().fields().paginate()
+
+    const [data, meta] = await Promise.all([
+        tourTypes.build(),
+        queryBuilder.getMeta()
+    ])
+
+    return {
+        data,
+        meta
+    }
 }
+
+const getSingleTourType = async (id: string) => {
+    const tourType = await TourType.findById(id);
+    return {
+        data: tourType
+    };
+};
 
 const updateTourType = async (id: string, payload: ITourType) => {
 
@@ -30,7 +53,13 @@ const updateTourType = async (id: string, payload: ITourType) => {
 }
 
 const deleteTourType = async (id: string) => {
+
+    const isUsed = await Tour.exists({ tourType: id });
+
+    if (isUsed) throw new AppError(httpStatus.BAD_REQUEST, "Cannot delete tourType — it's still used in tours");
+
     const existingTourType = await TourType.findById(id);
+
     if (!existingTourType) throw new Error("Tour type not found.");
 
     return await TourType.findByIdAndDelete(id);
@@ -162,13 +191,25 @@ const updateTour = async (id: string, payload: Partial<ITour>) => {
     return updatedTour;
 }
 
+const getSingleTour = async (slug: string) => {
+    const tour = await Tour.findOne({ slug });
+
+    if (!tour) throw new AppError(httpStatus.NOT_FOUND, "Tour not Found")
+
+    return {
+        date: tour
+    }
+}
+
 export const TourService = {
     createTourType,
     getAllTourTypes,
     updateTourType,
+    getSingleTourType,
     deleteTourType,
     createTour,
     getAllTours,
     updateTour,
-    getAllToursOld
+    getAllToursOld,
+    getSingleTour
 }
