@@ -58,8 +58,15 @@ router.patch(
     TourController.updateTour
 )
 
-router.get("/:slug",
+router.get(
+    "/:slug",
     TourController.getSingleTour
+)
+
+router.delete(
+    "/:id",
+    checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    TourController.deleteTour
 )
 
 export const TourRoutes = router;

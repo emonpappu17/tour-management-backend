@@ -201,6 +201,16 @@ const getSingleTour = async (slug: string) => {
     }
 }
 
+const deleteTour = async (id: string) => {
+    const existingTour = await Tour.findById(id);
+
+    if (!existingTour) {
+        throw new Error("Tour not found.");
+    }
+
+    return await Tour.findByIdAndDelete(id);
+}
+
 export const TourService = {
     createTourType,
     getAllTourTypes,
@@ -211,5 +221,6 @@ export const TourService = {
     getAllTours,
     updateTour,
     getAllToursOld,
-    getSingleTour
+    getSingleTour,
+    deleteTour
 }
