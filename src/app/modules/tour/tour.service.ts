@@ -203,6 +203,7 @@ const getSingleTour = async (slug: string) => {
 }
 
 const deleteTour = async (id: string) => {
+    
     const existingTour = await Tour.findById(id);
 
     if (!existingTour) {

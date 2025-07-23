@@ -17,6 +17,11 @@ const initPayment = async (bookingId: string) => {
     }
 
     const booking = await Booking.findById(payment.booking)
+        .populate("user", "name email phone address")
+        .populate("tour", "title costFrom")
+        .populate("payment")
+
+    console.log('booking===>', booking);
 
     const userAddress = (booking?.user as any).address
     const userEmail = (booking?.user as any).email
@@ -48,9 +53,17 @@ const successPayment = async (query: Record<string, string>) => {
     session.startTransaction();
 
     try {
-        const updatedPayment = await Payment.findOneAndUpdate({ transactionId: query.transactionId }, { status: PAYMENT_STATUS.PAID }, { runValidators: true, session })
+        const updatedPayment = await Payment.findOneAndUpdate(
+            { transactionId: query.transactionId },
+            { status: PAYMENT_STATUS.PAID },
+            { runValidators: true, session }
+        )
 
-        await Booking.findByIdAndUpdate(updatedPayment?.booking, { status: BOOKING_STATUS.COMPLETE }, { runValidators: true, session })
+        await Booking.findByIdAndUpdate(
+            updatedPayment?.booking,
+            { status: BOOKING_STATUS.COMPLETE },
+            { runValidators: true, session }
+        )
 
         await session.commitTransaction();
         session.endSession();
