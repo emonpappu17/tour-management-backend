@@ -4,12 +4,14 @@ import { createDivisionSchema, updateDivisionSchema } from "./division.validatio
 import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "../user/user.interface";
 import { DivisionController } from "./division.controller";
+import { multerUpload } from "../../config/multer.config";
 
 const route = Router();
 
 route.post(
     "/create",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    multerUpload.single("file"),
     validateRequest(createDivisionSchema),
     DivisionController.createDivision
 )
