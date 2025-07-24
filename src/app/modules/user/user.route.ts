@@ -19,17 +19,17 @@ router.get(
     UserController.getAllUsers
 )
 
+router.get(
+    "/me",
+    checkAuth(...Object.values(Role)),
+    UserController.getMe
+)
+
 router.patch(
     "/:id",
     validateRequest(updateUserZodSchema),
     checkAuth(...Object.values(Role)),
     UserController.updateUser
-)
-
-router.get(
-    "/me",
-    checkAuth(...Object.values(Role)),
-    UserController.getMe
 )
 
 router.get(
