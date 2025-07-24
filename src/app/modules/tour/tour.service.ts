@@ -6,6 +6,7 @@ import { excludeField } from "../../contants";
 import AppError from "../../errorHelpers/AppError";
 import httpStatus from "http-status-codes"
 import { Booking } from "../booking/booking.model";
+import { deleteImageFromCloudinary } from "../../config/cloudinary.config";
 
 /* --------------------- TOUR TYPE SERVICE ---------------------- */
 const createTourType = async (payload: ITourType) => {
@@ -69,7 +70,7 @@ const deleteTourType = async (id: string) => {
 /* --------------------- TOUR SERVICE ---------------------- */
 const createTour = async (payload: ITour) => {
 
-    throw new Error("A tour with this title already exists.");
+    // throw new Error("A tour with this title already exists.");
 
 
     const existingTour = await Tour.findOne({ title: payload.title });
@@ -190,7 +191,28 @@ const updateTour = async (id: string, payload: Partial<ITour>) => {
     //     payload.slug = slug
     // }
 
-    const updatedTour = await Tour.findByIdAndUpdate(id, payload, { new: true })
+    if (payload.images && payload.images.length > 0 && existingTour.images && existingTour.images.length > 0) {
+        payload.images = [...payload.images, ...existingTour.images]
+    }
+
+    if (payload.deleteImages && payload.deleteImages.length > 0 && existingTour.images && existingTour.images.length > 0) {
+
+        const restDBImages = existingTour.images.filter(imageUrl => !payload.deleteImages?.includes(imageUrl))
+
+        const updatedPayloadImages = (payload.images || [])
+            .filter(imageUrl => !payload.deleteImages?.includes(imageUrl))
+            .filter(imageUrl => !restDBImages.includes(imageUrl))
+
+        payload.images = [...restDBImages, ...updatedPayloadImages]
+        // payload.images = [...restDBImages, ...(payload.images || [])]
+    }
+
+    const updatedTour = await Tour.findByIdAndUpdate(id, payload, { new: true });
+
+    if (payload.deleteImages && payload.deleteImages.length > 0 && existingTour.images && existingTour.images.length > 0) {
+
+        await Promise.all(payload.deleteImages.map(url => deleteImageFromCloudinary(url)))
+    }
 
     return updatedTour;
 }
