@@ -12,7 +12,7 @@ export interface IInvoiceData {
     totalAmount: number;
 }
 
-export const generatePdf = async (invoiceData: IInvoiceData) => {
+export const generatePdf = async (invoiceData: IInvoiceData): Promise<Buffer<ArrayBufferLike>> => {
     try {
         return new Promise((resolve, reject) => {
             const doc = new PDFDocument({ size: 'A4', margin: 50 })
@@ -35,6 +35,7 @@ export const generatePdf = async (invoiceData: IInvoiceData) => {
             doc.text(`Tour: ${invoiceData.tourTitle}`);
             doc.text(`Guests: ${invoiceData.guestCount}`);
             doc.text(`Total Amount: $${invoiceData.totalAmount.toFixed(2)}`);
+
             doc.moveDown();
 
             doc.text("Thank you for booking with us!", { align: "center" });
