@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { UserController } from "./user.controller";
-import { updateUserZodSchema } from './user.validation'
+import { createUserZodSchema, updateUserZodSchema } from './user.validation'
 import { Role } from "./user.interface";
 import { validateRequest } from "../../middlewares/validateRequest";
 import { checkAuth } from "../../middlewares/checkAuth";
@@ -9,7 +9,7 @@ const router = Router()
 
 router.post(
     "/register",
-    // validateRequest(createUserZodSchema),
+    validateRequest(createUserZodSchema),
     UserController.createUser
 )
 
