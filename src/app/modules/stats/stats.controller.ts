@@ -18,7 +18,7 @@ const getTourStats = catchAsync(async (req: Request, res: Response) => {
     sendResponse(res, {
         statusCode: 200,
         success: true,
-        message: "Booking stats fetched successfully",
+        message: "Tour stats fetched successfully",
         data: stats,
     });
 });
@@ -27,7 +27,7 @@ const getBookingStats = catchAsync(async (req: Request, res: Response) => {
     sendResponse(res, {
         statusCode: 200,
         success: true,
-        message: "Tour stats fetched successfully",
+        message: "Booking stats fetched successfully",
         data: stats,
     });
 });
