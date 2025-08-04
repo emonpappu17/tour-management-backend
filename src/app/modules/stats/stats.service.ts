@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Booking } from "../booking/booking.model";
+import { PAYMENT_STATUS } from "../payment/payment.interface";
+import { Payment } from "../payment/payment.model";
 import { Tour } from "../tour/tour.model";
 import { IsActive } from "../user/user.interface";
 import { User } from "../user/user.model";
@@ -51,7 +54,6 @@ const getUserStats = async () => {
         usersByRole
     }
 }
-
 
 const getTourStats = async () => {
     const totalTourPromise = Tour.countDocuments();
@@ -156,12 +158,7 @@ const getTourStats = async () => {
                 "tour.slug": 1
             }
         }
-
-
-
     ])
-
-
 
     const [totalTour, totalTourByTourType, avgTourCost, totalTourByDivision, totalHighestBookedTour] = await Promise.all([
         totalTourPromise,
@@ -180,16 +177,157 @@ const getTourStats = async () => {
     }
 }
 
-const getBookingStats = () => {
-    return
+const getBookingStats = async () => {
+    const totalBookingPromise = Booking.countDocuments();
+
+    const totalBookingByStatusPromise = Booking.aggregate([
+        // stage-1 group stage
+        {
+            $group: {
+                _id: "$status",
+                count: { $sum: 1 }
+            }
+        }
+    ])
+
+    const bookingPerTourPromise = Booking.aggregate([
+        {
+            $group: {
+                _id: "$tour",
+                bookingCount: { $sum: 1 }
+            }
+        },
+        {
+            $sort: { bookingCount: -1 }
+        },
+        {
+            $limit: 10
+        },
+        {
+            $lookup: {
+                from: "tours",
+                localField: "_id",
+                foreignField: "_id",
+                as: "tour"
+            }
+        },
+        {
+            $unwind: "$tour"
+        },
+        {
+            $project: {
+                bookingCount: 1,
+                _id: 1,
+                "tour.title": 1,
+                "tour.slug": 1
+            }
+        }
+    ])
+
+    const avgGuestCountPerBookingPromise = Booking.aggregate([
+        {
+            $group: {
+                _id: null,
+                avgGuestCount: { $avg: "$guestCount" }
+            }
+        }
+    ])
+
+    const bookingLast7DaysPromise = Booking.countDocuments({
+        createdAt: { $gte: sevenDaysAgo }
+    })
+
+    const bookingLast30DaysPromise = Booking.countDocuments({
+        createdAt: { $gte: thirtyDaysAgo }
+    })
+
+    const totalBookingByUniqueUsersPromise = Booking.distinct("user").then((user: any) => user.length)
+
+    const [totalBooking, totalBookingByStatus, bookingPerTour, avgGuestCountPerBooking, bookingLast7Days, bookingLast30Days, totalBookingByUniqueUsers] = await Promise.all([
+        totalBookingPromise,
+        totalBookingByStatusPromise,
+        bookingPerTourPromise,
+        avgGuestCountPerBookingPromise,
+        bookingLast7DaysPromise,
+        bookingLast30DaysPromise,
+        totalBookingByUniqueUsersPromise,
+    ])
+
+    return {
+        totalBooking,
+        totalBookingByStatus,
+        bookingPerTour,
+        avgGuestCountPerBooking: avgGuestCountPerBooking[0].avgGuestCount,
+        bookingLast7Days,
+        bookingLast30Days,
+        totalBookingByUniqueUsers
+    }
 }
 
-// const getBookingStats = () => {
-//return
-// }
+const getPaymentStats = async () => {
+    const totalPaymentPromise = Payment.countDocuments();
+
+    const totalPaymentByStatusPromise = Payment.aggregate([
+        {
+            $group: {
+                _id: "$status",
+                count: { $sum: 1 }
+            }
+        }
+    ])
+
+    const totalRevenuePromise = Payment.aggregate([
+        {
+            $match: { status: PAYMENT_STATUS.PAID }
+        },
+        {
+            $group: {
+                _id: null,
+                totalRevenue: { $sum: "$amount" }
+            }
+        }
+    ])
+
+    const avgPaymentAmountPromise = Payment.aggregate([
+        {
+            $group: {
+                _id: null,
+                avgPaymentAmount: { $avg: "$amount" }
+            }
+        }
+    ])
+
+    const paymentGatewayDataPromise = Payment.aggregate([
+        {
+            $group: {
+                _id: {
+                    $ifNull: ["$paymentGatewayData.status", "UNKNOWN"]
+                },
+                count: { $sum: 1 }
+            }
+        }
+    ])
+
+    const [totalPayment, totalRevenue, totalPaymentByStatus, avgPaymentAmount, paymentGatewayData] = await Promise.all([
+        totalPaymentPromise,
+        totalPaymentByStatusPromise,
+        totalRevenuePromise,
+        avgPaymentAmountPromise,
+        paymentGatewayDataPromise
+    ])
+
+    return {
+        totalPayment,
+        totalRevenue,
+        totalPaymentByStatus,
+        avgPaymentAmount,
+        paymentGatewayData
+    }
+}
 
 export const StatsService = {
     getUserStats,
     getBookingStats,
-    getTourStats
+    getTourStats,
+    getPaymentStats
 }
