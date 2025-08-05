@@ -34,7 +34,6 @@ const initPayment = async (bookingId: string) => {
         .populate("tour", "title costFrom")
         .populate("payment")
 
-    console.log('booking===>', booking);
 
     const userAddress = (booking?.user as any).address
     const userEmail = (booking?.user as any).email

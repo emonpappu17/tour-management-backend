@@ -3,7 +3,7 @@ import { GuideController } from "./guide.controller";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "../user/user.interface";
 import { validateRequest } from "../../middlewares/validateRequest";
-import { guideApplyZodSchema } from "./guide.validation";
+import { guideApplyZodSchema, guideApprovalZodSchema } from "./guide.validation";
 import { multerUpload } from "../../config/multer.config";
 
 const router = Router();
@@ -19,10 +19,11 @@ router.post(
 router.post(
     "/approve/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    validateRequest(guideApprovalZodSchema),
     GuideController.approveGuide
 )
 
-router.post(
+router.get(
     "/",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
     GuideController.getAllGuides
