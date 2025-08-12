@@ -133,8 +133,6 @@ passport.use(new GoogleStrategy(
 
 // Store session data. Saves the user info after login 
 passport.serializeUser((user: any, done: (err: any, id?: unknown) => void) => {
-    console.log('serializeUser hit');
-    console.log('serializeUser user -->', user);
     //Send session ID cookie. Sends ID to browser to identify the user on future requests
     done(null, user._id)
 })
@@ -142,7 +140,6 @@ passport.serializeUser((user: any, done: (err: any, id?: unknown) => void) => {
 //Enable req.user	Brings back the user data on every request 
 passport.deserializeUser(async (id: string, done: any) => {
     try {
-        console.log('deserializeUser hit');
         const user = await User.findById(id);
         done(null, user)
     } catch (error) {

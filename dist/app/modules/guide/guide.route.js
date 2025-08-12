@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.GuideRoutes = void 0;
+const express_1 = require("express");
+const guide_controller_1 = require("./guide.controller");
+const checkAuth_1 = require("../../middlewares/checkAuth");
+const user_interface_1 = require("../user/user.interface");
+const validateRequest_1 = require("../../middlewares/validateRequest");
+const guide_validation_1 = require("./guide.validation");
+const multer_config_1 = require("../../config/multer.config");
+const router = (0, express_1.Router)();
+router.post("/apply", (0, checkAuth_1.checkAuth)(user_interface_1.Role.USER), multer_config_1.multerUpload.single("file"), (0, validateRequest_1.validateRequest)(guide_validation_1.guideApplyZodSchema), guide_controller_1.GuideController.applyForGuide);
+router.post("/approve/:id", (0, checkAuth_1.checkAuth)(user_interface_1.Role.ADMIN, user_interface_1.Role.SUPER_ADMIN), (0, validateRequest_1.validateRequest)(guide_validation_1.guideApprovalZodSchema), guide_controller_1.GuideController.approveGuide);
+router.get("/", (0, checkAuth_1.checkAuth)(user_interface_1.Role.ADMIN, user_interface_1.Role.SUPER_ADMIN), guide_controller_1.GuideController.getAllGuides);
+exports.GuideRoutes = router;

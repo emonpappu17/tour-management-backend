@@ -117,15 +117,12 @@ passport_1.default.use(new passport_google_oauth20_1.Strategy({
 // Google -> req -> google -> successful : jwt Token : Role, email -> DB - Store -> token -> api access
 // Store session data. Saves the user info after login 
 passport_1.default.serializeUser((user, done) => {
-    console.log('serializeUser hit');
-    console.log('serializeUser user -->', user);
     //Send session ID cookie. Sends ID to browser to identify the user on future requests
     done(null, user._id);
 });
 //Enable req.user	Brings back the user data on every request 
 passport_1.default.deserializeUser((id, done) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log('deserializeUser hit');
         const user = yield user_model_1.User.findById(id);
         done(null, user);
     }

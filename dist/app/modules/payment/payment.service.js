@@ -33,7 +33,6 @@ const initPayment = (bookingId) => __awaiter(void 0, void 0, void 0, function* (
         .populate("user", "name email phone address")
         .populate("tour", "title costFrom")
         .populate("payment");
-    console.log('booking===>', booking);
     const userAddress = (booking === null || booking === void 0 ? void 0 : booking.user).address;
     const userEmail = (booking === null || booking === void 0 ? void 0 : booking.user).email;
     const userPhoneNumber = (booking === null || booking === void 0 ? void 0 : booking.user).phone;

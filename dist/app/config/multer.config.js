@@ -24,7 +24,6 @@ const storage = new multer_storage_cloudinary_1.CloudinaryStorage({
             // 0.2312345121 -> "0.hedfa674338sasfamx" -> 
             //452384772534
             const uniqueFileName = Math.random().toString(36).substring(2) + "-" + Date.now() + "-" + fileName + "." + extension;
-            console.log('uniqueFileName===>', uniqueFileName);
             return uniqueFileName;
         }
     }
